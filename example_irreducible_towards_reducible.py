@@ -1,6 +1,5 @@
 # %%
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 from utils import get_environment
 from solvers import u_solver

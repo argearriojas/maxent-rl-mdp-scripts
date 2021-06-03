@@ -1,13 +1,14 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
-from utils import get_maze, get_environment, make_greedy
+from progress.bar import Bar
+
+from utils import get_maze, get_environment
 
 from solvers import u_solver
 from model_free import ULearning, gather_experience
 
 from visualization import plot_dist, draw_paths
-from progress.bar import Bar
 
 # %%
 desc = get_maze(maze='7x7holes', variant='holes')
