@@ -13,9 +13,9 @@ class ModifiedFrozenLake(discrete.DiscreteEnv):
 
     def __init__(
             self, desc=None, map_name="4x4", slippery=0, n_action=4,
-            cyclic_mode=False, hot_edges=False, never_done=False, 
-            goal_attractor=False,
-            max_reward=0., min_reward=-1., step_penalization=0.):
+            cyclic_mode=True, never_done=True,
+            goal_attractor=0.,
+            max_reward=0., min_reward=-1.5, step_penalization=1.):
 
         goal_attractor = float(goal_attractor)
 
@@ -61,9 +61,6 @@ class ModifiedFrozenLake(discrete.DiscreteEnv):
         all_actions = set(list(range(n_action)))
         self.n_state = n_state = nrow * ncol
         self.n_action = n_action
-
-        if step_penalization is None:
-            step_penalization = 1. / n_state
 
         isd = np.array(desc == b'S').astype('float64').ravel()
         if isd.sum() == 0:
@@ -118,10 +115,8 @@ class ModifiedFrozenLake(discrete.DiscreteEnv):
                     newrow, newcol = inc(row, col, action_executed)
                     newletter = desc[newrow, newcol]
                     newstate = to_s(newrow, newcol)
-                    edge_hit = action_executed != a_stay and state == newstate
-                    got_burned = edge_hit and hot_edges
 
-                    if letter == b'G' and goal_attractor:
+                    if letter == b'G':
                         newletter = letter
                         newstate = state
 
@@ -134,27 +129,18 @@ class ModifiedFrozenLake(discrete.DiscreteEnv):
                     ate_candy = letter == b'C'
                     step_nail = letter == b'N'
 
-                    numbers = b'0123456789'
-                    newpotential = np.int(newletter) if newletter in numbers else 0
-
-                    # making diagonal steps costlier makes the agent to avoid them at all,
-                    # even if the overall cost of trajectories would be less.
-                    # can't yet explain why
                     is_diagonal_step = diagonal_mode and action_executed in [4, 5, 6, 7]
                     diagonal_adjust = 1.4 if is_diagonal_step else 1.
 
-                    done = is_in_goal #or is_in_hole or got_burned
                     rew = 0.
-                    rew -= step_penalization * (1. - done) * diagonal_adjust
-                    rew -= step_penalization * newpotential / 10.
+                    rew -= step_penalization * (1. - is_in_goal) * diagonal_adjust
                     rew -= step_nail * step_penalization / 2.
                     rew += ate_candy * step_penalization / 2.
                     rew += is_in_goal * max_reward
                     rew += is_in_hole * min_reward
-                    rew += got_burned * min_reward
 
-                    done = done and not never_done
-                    if goal_attractor > 0 and is_in_goal:
+                    done = is_in_goal and not never_done
+                    if is_in_goal:
                         sat_li.append((prob * goal_attractor, newstate, rew, done))
                         for ini_state, start_prob in enumerate(isd):
                             if start_prob > 0.0:
