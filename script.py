@@ -9,7 +9,7 @@ from visualization import plot_dist
 # %%
 
 desc = get_maze()
-env = get_environment(desc, stay_prob=1)
+env = get_environment(desc, stay_at_goal_prob=1)
 
 solution = maze_solver(env)
 softq_sol = softq_solver(env, tolerance=1e-15)
