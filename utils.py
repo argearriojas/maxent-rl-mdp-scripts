@@ -56,7 +56,7 @@ def get_zigzag_maze(maze_size=1):
 
 def get_environment(desc, max_steps=1000, stay_at_goal_prob=0.):
     env_src = ModifiedFrozenLake(
-        n_action=4, hot_edges=False, max_reward=0., min_reward=-1.5, step_penalization=1,
+        n_action=4, max_reward=0., min_reward=-1.5, step_penalization=1,
         desc=desc, never_done=True, cyclic_mode=True, slippery=0, goal_attractor=stay_at_goal_prob)
     env = TimeLimit(env_src, max_episode_steps=max_steps)
 
@@ -110,3 +110,9 @@ def get_mdp_generator(env, transition_dynamics, policy):
     mdp_generator = csr_matrix((data, (rows, cols)), shape=shape)
 
     return mdp_generator
+
+def make_greedy(policy):
+    greedy_policy = (policy == policy.max(axis=1).reshape(-1, 1)).astype(float)
+    greedy_policy /= greedy_policy.sum(axis=1).reshape((-1, 1))
+
+    return greedy_policy
