@@ -186,8 +186,8 @@ def u_solver(env, prior_policy=None, steps=100, beta=1, tolerance=1e-2):
         )
     ).T / beta
 
-    policy = np.array(u).reshape(prior_policy.shape) * prior_policy
-    policy = policy / policy.sum(axis=1).reshape((-1, 1))
+    policy = np.multiply(u.reshape(prior_policy.shape), prior_policy)
+    policy = policy / policy.sum(axis=1)
 
     return dict(
         Q=np.array(uQ).reshape((env.nS, env.nA)),
