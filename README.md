@@ -27,7 +27,7 @@ python example_model_free.py
 ![Fig 4](fig4.png)
 
 ```
-reproduce figure S1
+# reproduce figure S1
 python example_irreducible_towards_reducible.py
 ```
 ![Fig S1](figS1.png)
